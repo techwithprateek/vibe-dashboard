@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Airbnb NYC Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --panel: #1a1d27;
+      --panel-soft: #212534;
+      --accent: #6c63ff;
+      --accent-soft: rgba(108, 99, 255, 0.18);
+      --text: #f7fafc;
+      --muted: #a0aec0;
+      --border: rgba(160, 174, 192, 0.14);
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+      --chart-grid: rgba(255, 255, 255, 0.06);
+      --success: #48bb78;
+      --warning: #ed8936;
+      --danger: #f56565;
+      --info: #4299e1;
+      --violet: #9f7aea;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(108, 99, 255, 0.18), transparent 32%),
+        radial-gradient(circle at top right, rgba(66, 153, 225, 0.12), transparent 26%),
+        linear-gradient(180deg, #0f1117 0%, #0b0d14 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: min(1400px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+    }
+
+    .hero,
+    .card,
+    .chart-card,
+    .footer {
+      background: linear-gradient(180deg, rgba(26, 29, 39, 0.98), rgba(18, 21, 31, 0.96));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    .hero {
+      border-radius: 28px;
+      padding: 1.75rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      animation-delay: 0.05s;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: #cbd5e0;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin-top: 0.75rem;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 0.75rem;
+      min-width: min(100%, 280px);
+    }
+
+    .filter-wrap {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .filter-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    select {
+      appearance: none;
+      width: 100%;
+      border: 1px solid rgba(108, 99, 255, 0.25);
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+      background: linear-gradient(180deg, rgba(108, 99, 255, 0.18), rgba(33, 37, 52, 0.95));
+      color: var(--text);
+      font: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    select:focus {
+      border-color: rgba(108, 99, 255, 0.85);
+      transform: translateY(-1px);
+    }
+
+    .hero-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .kpi-grid,
+    .chart-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .kpi-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .chart-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card,
+    .chart-card {
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .card {
+      padding: 1.35rem;
+      position: relative;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 130px;
+      height: 130px;
+      background: radial-gradient(circle, rgba(108, 99, 255, 0.18), transparent 65%);
+      pointer-events: none;
+    }
+
+    .card-label {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .card-value {
+      font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin: 0;
+    }
+
+    .card-subtext {
+      margin-top: 0.55rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .chart-card {
+      padding: 1.2rem 1.2rem 0.9rem;
+      min-height: 360px;
+      animation-delay: 0.12s;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .chart-title {
+      margin: 0;
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .chart-description {
+      margin-top: 0.35rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      background: rgba(108, 99, 255, 0.14);
+      color: #d6d1ff;
+      border: 1px solid rgba(108, 99, 255, 0.2);
+      border-radius: 999px;
+      padding: 0.38rem 0.7rem;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .chart-canvas {
+      position: relative;
+      height: 290px;
+    }
+
+    .footer {
+      border-radius: 20px;
+      padding: 1rem 1.2rem;
+      margin-top: 1rem;
+      text-align: center;
+      color: var(--muted);
+      animation-delay: 0.18s;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .kpi-grid,
+      .chart-grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 1rem, 1400px); padding-top: 1rem; }
+      .hero { flex-direction: column; }
+      .kpi-grid,
+      .chart-grid.two {
+        grid-template-columns: 1fr;
+      }
+      .chart-card { min-height: 340px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">📊 Live creator-ready snapshot</div>
+        <h1>🏠 Airbnb NYC Dashboard</h1>
+        <p class="subtitle">New York City · 2024 Data</p>
+      </div>
+      <div class="hero-meta">
+        <div class="filter-wrap">
+          <label class="filter-label" for="boroughFilter">Filter by Borough</label>
+          <select id="boroughFilter">
+            <option value="All Boroughs">All Boroughs</option>
+          </select>
+        </div>
+        <p class="hero-note">Explore borough-level performance, neighborhood density, room mix, pricing bands, and availability trends — all in a single standalone HTML file.</p>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="card"><div class="card-label">📌 Total Listings</div><h2 class="card-value" data-kpi="total_listings">0</h2><div class="card-subtext" id="context-listings">Active listings under the selected view</div></article>
+      <article class="card"><div class="card-label">💸 Avg Price / Night</div><h2 class="card-value" data-kpi="avg_price">$0</h2><div class="card-subtext" id="context-price">Average nightly price after outlier removal</div></article>
+      <article class="card"><div class="card-label">👋 Total Hosts</div><h2 class="card-value" data-kpi="total_hosts">0</h2><div class="card-subtext" id="context-hosts">Distinct hosts in the selected segment</div></article>
+      <article class="card"><div class="card-label">⭐ Avg Reviews</div><h2 class="card-value" data-kpi="avg_reviews">0</h2><div class="card-subtext" id="context-reviews">Average reviews per listing</div></article>
+    </section>
+
+    <section class="chart-grid two">
+      <article class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Listings by Borough</h3>
+            <div class="chart-description">Compare listing volume and average price at a borough level.</div>
+          </div>
+          <div class="pill" id="boroughPill">All Boroughs</div>
+        </div>
+        <div class="chart-canvas"><canvas id="boroughChart"></canvas></div>
+      </article>
+      <article class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Room Type Split</h3>
+            <div class="chart-description">See how inventory is distributed across Airbnb stay formats.</div>
+          </div>
+          <div class="pill">Doughnut</div>
+        </div>
+        <div class="chart-canvas"><canvas id="roomTypeChart"></canvas></div>
+      </article>
+    </section>
+
+    <section class="chart-grid two">
+      <article class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Top 10 Neighbourhoods</h3>
+            <div class="chart-description">The most active neighborhoods by listing count in the selected scope.</div>
+          </div>
+          <div class="pill">Top 10</div>
+        </div>
+        <div class="chart-canvas"><canvas id="topNeighbourhoodChart"></canvas></div>
+      </article>
+      <article class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Price Distribution</h3>
+            <div class="chart-description">How listing counts stack across common nightly price ranges.</div>
+          </div>
+          <div class="pill">Bucketed</div>
+        </div>
+        <div class="chart-canvas"><canvas id="priceDistributionChart"></canvas></div>
+      </article>
+    </section>
+
+    <section class="chart-grid two">
+      <article class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Avg Availability by Borough</h3>
+            <div class="chart-description">Annual availability windows across the five boroughs.</div>
+          </div>
+          <div class="pill">365-day avg</div>
+        </div>
+        <div class="chart-canvas"><canvas id="availabilityChart"></canvas></div>
+      </article>
+      <article class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Avg Price by Borough</h3>
+            <div class="chart-description">A quick premium check for each borough in the city.</div>
+          </div>
+          <div class="pill">Line + fill</div>
+        </div>
+        <div class="chart-canvas"><canvas id="boroughPriceChart"></canvas></div>
+      </article>
+    </section>
+
+    <footer class="footer">Data: Inside Airbnb · Built with Claude Code</footer>
+  </div>
+
+  <script>
+    const RAW_DATA = {
+  "meta": {
+    "source": "Inside Airbnb",
+    "city": "New York City",
+    "snapshot": "2024",
+    "notes": "Prices above $1000 are excluded as outliers. All values are pre-aggregated."
+  },
+  "kpis": {
+    "total_listings": 20590,
+    "avg_price": 161.3,
+    "total_hosts": 12350,
+    "avg_reviews": 42.8
+  },
+  "by_neighbourhood_group": [
+    {
+      "name": "Manhattan",
+      "listings": 7900,
+      "avg_price": 195.2
+    },
+    {
+      "name": "Brooklyn",
+      "listings": 7697,
+      "avg_price": 154.2
+    },
+    {
+      "name": "Queens",
+      "listings": 3754,
+      "avg_price": 121.1
+    },
+    {
+      "name": "Bronx",
+      "listings": 948,
+      "avg_price": 108.0
+    },
+    {
+      "name": "Staten Island",
+      "listings": 291,
+      "avg_price": 118.8
+    }
+  ],
+  "by_room_type": [
+    {
+      "type": "Entire home/apt",
+      "count": 11423,
+      "avg_price": 203.9
+    },
+    {
+      "type": "Private room",
+      "count": 8770,
+      "avg_price": 106.1
+    },
+    {
+      "type": "Shared room",
+      "count": 288,
+      "avg_price": 100.5
+    },
+    {
+      "type": "Hotel room",
+      "count": 109,
+      "avg_price": 288.8
+    }
+  ],
+  "top_neighbourhoods": [
+    {
+      "name": "Bedford-Stuyvesant",
+      "borough": "Brooklyn",
+      "listings": 1582,
+      "avg_price": 138.8
+    },
+    {
+      "name": "Harlem",
+      "borough": "Manhattan",
+      "listings": 1057,
+      "avg_price": 142.5
+    },
+    {
+      "name": "Williamsburg",
+      "borough": "Brooklyn",
+      "listings": 968,
+      "avg_price": 184.2
+    },
+    {
+      "name": "Midtown",
+      "borough": "Manhattan",
+      "listings": 915,
+      "avg_price": 217.2
+    },
+    {
+      "name": "Hell's Kitchen",
+      "borough": "Manhattan",
+      "listings": 857,
+      "avg_price": 227.5
+    },
+    {
+      "name": "Upper East Side",
+      "borough": "Manhattan",
+      "listings": 780,
+      "avg_price": 173.0
+    },
+    {
+      "name": "Bushwick",
+      "borough": "Brooklyn",
+      "listings": 750,
+      "avg_price": 120.5
+    },
+    {
+      "name": "Crown Heights",
+      "borough": "Brooklyn",
+      "listings": 662,
+      "avg_price": 159.6
+    },
+    {
+      "name": "Upper West Side",
+      "borough": "Manhattan",
+      "listings": 611,
+      "avg_price": 200.3
+    },
+    {
+      "name": "East Village",
+      "borough": "Manhattan",
+      "listings": 404,
+      "avg_price": 208.2
+    }
+  ],
+  "price_distribution": [
+    {
+      "range": "$0-50",
+      "count": 2032
+    },
+    {
+      "range": "$51-100",
+      "count": 5967
+    },
+    {
+      "range": "$101-150",
+      "count": 4885
+    },
+    {
+      "range": "$151-200",
+      "count": 3109
+    },
+    {
+      "range": "$201-300",
+      "count": 2625
+    },
+    {
+      "range": "$301+",
+      "count": 1972
+    }
+  ],
+  "availability_by_borough": [
+    {
+      "borough": "Manhattan",
+      "avg_availability": 203
+    },
+    {
+      "borough": "Brooklyn",
+      "avg_availability": 200
+    },
+    {
+      "borough": "Queens",
+      "avg_availability": 212
+    },
+    {
+      "borough": "Bronx",
+      "avg_availability": 237
+    },
+    {
+      "borough": "Staten Island",
+      "avg_availability": 232
+    }
+  ],
+  "borough_breakdowns": {
+    "Manhattan": {
+      "kpis": {
+        "total_listings": 7900,
+        "avg_price": 195.2,
+        "total_hosts": 4067,
+        "avg_reviews": 37.3
+      },
+      "by_room_type": [
+        {
+          "type": "Entire home/apt",
+          "count": 5184,
+          "avg_price": 223.6
+        },
+        {
+          "type": "Private room",
+          "count": 2546,
+          "avg_price": 135.7
+        },
+        {
+          "type": "Hotel room",
+          "count": 98,
+          "avg_price": 302.7
+        },
+        {
+          "type": "Shared room",
+          "count": 72,
+          "avg_price": 107.6
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Harlem",
+          "listings": 1057,
+          "avg_price": 142.5
+        },
+        {
+          "name": "Midtown",
+          "listings": 915,
+          "avg_price": 217.2
+        },
+        {
+          "name": "Hell's Kitchen",
+          "listings": 857,
+          "avg_price": 227.5
+        },
+        {
+          "name": "Upper East Side",
+          "listings": 780,
+          "avg_price": 173.0
+        },
+        {
+          "name": "Upper West Side",
+          "listings": 611,
+          "avg_price": 200.3
+        },
+        {
+          "name": "East Village",
+          "listings": 404,
+          "avg_price": 208.2
+        },
+        {
+          "name": "East Harlem",
+          "listings": 374,
+          "avg_price": 141.3
+        },
+        {
+          "name": "Chelsea",
+          "listings": 359,
+          "avg_price": 245.4
+        },
+        {
+          "name": "Lower East Side",
+          "listings": 322,
+          "avg_price": 190.9
+        },
+        {
+          "name": "Washington Heights",
+          "listings": 300,
+          "avg_price": 116.1
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 363
+        },
+        {
+          "range": "$51-100",
+          "count": 1737
+        },
+        {
+          "range": "$101-150",
+          "count": 1997
+        },
+        {
+          "range": "$151-200",
+          "count": 1368
+        },
+        {
+          "range": "$201-300",
+          "count": 1269
+        },
+        {
+          "range": "$301+",
+          "count": 1166
+        }
+      ],
+      "avg_availability": 203,
+      "borough": "Manhattan"
+    },
+    "Brooklyn": {
+      "kpis": {
+        "total_listings": 7697,
+        "avg_price": 154.2,
+        "total_hosts": 5280,
+        "avg_reviews": 48.9
+      },
+      "by_room_type": [
+        {
+          "type": "Entire home/apt",
+          "count": 4114,
+          "avg_price": 200.8
+        },
+        {
+          "type": "Private room",
+          "count": 3457,
+          "avg_price": 100.4
+        },
+        {
+          "type": "Shared room",
+          "count": 122,
+          "avg_price": 106.0
+        },
+        {
+          "type": "Hotel room",
+          "count": 4,
+          "avg_price": 162.8
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Bedford-Stuyvesant",
+          "listings": 1582,
+          "avg_price": 138.8
+        },
+        {
+          "name": "Williamsburg",
+          "listings": 968,
+          "avg_price": 184.2
+        },
+        {
+          "name": "Bushwick",
+          "listings": 750,
+          "avg_price": 120.5
+        },
+        {
+          "name": "Crown Heights",
+          "listings": 662,
+          "avg_price": 159.6
+        },
+        {
+          "name": "East Flatbush",
+          "listings": 401,
+          "avg_price": 124.8
+        },
+        {
+          "name": "Greenpoint",
+          "listings": 297,
+          "avg_price": 195.3
+        },
+        {
+          "name": "Flatbush",
+          "listings": 269,
+          "avg_price": 155.5
+        },
+        {
+          "name": "East New York",
+          "listings": 246,
+          "avg_price": 129.8
+        },
+        {
+          "name": "Prospect-Lefferts Gardens",
+          "listings": 210,
+          "avg_price": 143.9
+        },
+        {
+          "name": "Canarsie",
+          "listings": 189,
+          "avg_price": 128.9
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 844
+        },
+        {
+          "range": "$51-100",
+          "count": 2225
+        },
+        {
+          "range": "$101-150",
+          "count": 1842
+        },
+        {
+          "range": "$151-200",
+          "count": 1186
+        },
+        {
+          "range": "$201-300",
+          "count": 987
+        },
+        {
+          "range": "$301+",
+          "count": 613
+        }
+      ],
+      "avg_availability": 200,
+      "borough": "Brooklyn"
+    },
+    "Queens": {
+      "kpis": {
+        "total_listings": 3754,
+        "avg_price": 121.1,
+        "total_hosts": 2310,
+        "avg_reviews": 43.7
+      },
+      "by_room_type": [
+        {
+          "type": "Private room",
+          "count": 2093,
+          "avg_price": 87.4
+        },
+        {
+          "type": "Entire home/apt",
+          "count": 1579,
+          "avg_price": 167.3
+        },
+        {
+          "type": "Shared room",
+          "count": 75,
+          "avg_price": 84.1
+        },
+        {
+          "type": "Hotel room",
+          "count": 7,
+          "avg_price": 165.7
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Astoria",
+          "listings": 361,
+          "avg_price": 112.4
+        },
+        {
+          "name": "Flushing",
+          "listings": 324,
+          "avg_price": 109.6
+        },
+        {
+          "name": "Long Island City",
+          "listings": 252,
+          "avg_price": 160.6
+        },
+        {
+          "name": "Jamaica",
+          "listings": 241,
+          "avg_price": 127.4
+        },
+        {
+          "name": "East Elmhurst",
+          "listings": 183,
+          "avg_price": 130.6
+        },
+        {
+          "name": "Woodside",
+          "listings": 170,
+          "avg_price": 79.1
+        },
+        {
+          "name": "Ridgewood",
+          "listings": 163,
+          "avg_price": 128.4
+        },
+        {
+          "name": "Elmhurst",
+          "listings": 145,
+          "avg_price": 79.1
+        },
+        {
+          "name": "Sunnyside",
+          "listings": 138,
+          "avg_price": 111.8
+        },
+        {
+          "name": "Jackson Heights",
+          "listings": 136,
+          "avg_price": 105.7
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 627
+        },
+        {
+          "range": "$51-100",
+          "count": 1449
+        },
+        {
+          "range": "$101-150",
+          "count": 784
+        },
+        {
+          "range": "$151-200",
+          "count": 432
+        },
+        {
+          "range": "$201-300",
+          "count": 305
+        },
+        {
+          "range": "$301+",
+          "count": 157
+        }
+      ],
+      "avg_availability": 212,
+      "borough": "Queens"
+    },
+    "Bronx": {
+      "kpis": {
+        "total_listings": 948,
+        "avg_price": 108.0,
+        "total_hosts": 632,
+        "avg_reviews": 35.4
+      },
+      "by_room_type": [
+        {
+          "type": "Private room",
+          "count": 543,
+          "avg_price": 79.1
+        },
+        {
+          "type": "Entire home/apt",
+          "count": 390,
+          "avg_price": 149.0
+        },
+        {
+          "type": "Shared room",
+          "count": 15,
+          "avg_price": 87.3
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Wakefield",
+          "listings": 66,
+          "avg_price": 99.2
+        },
+        {
+          "name": "Mott Haven",
+          "listings": 56,
+          "avg_price": 142.6
+        },
+        {
+          "name": "Kingsbridge",
+          "listings": 55,
+          "avg_price": 86.5
+        },
+        {
+          "name": "Williamsbridge",
+          "listings": 55,
+          "avg_price": 102.5
+        },
+        {
+          "name": "Fordham",
+          "listings": 39,
+          "avg_price": 93.7
+        },
+        {
+          "name": "Clason Point",
+          "listings": 36,
+          "avg_price": 108.4
+        },
+        {
+          "name": "Allerton",
+          "listings": 35,
+          "avg_price": 100.8
+        },
+        {
+          "name": "Concourse",
+          "listings": 32,
+          "avg_price": 93.7
+        },
+        {
+          "name": "Claremont Village",
+          "listings": 31,
+          "avg_price": 115.7
+        },
+        {
+          "name": "Longwood",
+          "listings": 30,
+          "avg_price": 105.2
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 167
+        },
+        {
+          "range": "$51-100",
+          "count": 429
+        },
+        {
+          "range": "$101-150",
+          "count": 186
+        },
+        {
+          "range": "$151-200",
+          "count": 96
+        },
+        {
+          "range": "$201-300",
+          "count": 43
+        },
+        {
+          "range": "$301+",
+          "count": 27
+        }
+      ],
+      "avg_availability": 237,
+      "borough": "Bronx"
+    },
+    "Staten Island": {
+      "kpis": {
+        "total_listings": 291,
+        "avg_price": 118.8,
+        "total_hosts": 209,
+        "avg_reviews": 46.4
+      },
+      "by_room_type": [
+        {
+          "type": "Entire home/apt",
+          "count": 156,
+          "avg_price": 139.9
+        },
+        {
+          "type": "Private room",
+          "count": 131,
+          "avg_price": 92.4
+        },
+        {
+          "type": "Shared room",
+          "count": 4,
+          "avg_price": 161.2
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Tompkinsville",
+          "listings": 35,
+          "avg_price": 135.8
+        },
+        {
+          "name": "St. George",
+          "listings": 31,
+          "avg_price": 120.8
+        },
+        {
+          "name": "Mariners Harbor",
+          "listings": 20,
+          "avg_price": 92.3
+        },
+        {
+          "name": "West Brighton",
+          "listings": 20,
+          "avg_price": 72.5
+        },
+        {
+          "name": "Grant City",
+          "listings": 13,
+          "avg_price": 64.5
+        },
+        {
+          "name": "Stapleton",
+          "listings": 12,
+          "avg_price": 142.7
+        },
+        {
+          "name": "Arrochar",
+          "listings": 11,
+          "avg_price": 124.8
+        },
+        {
+          "name": "Clifton",
+          "listings": 10,
+          "avg_price": 153.7
+        },
+        {
+          "name": "Randall Manor",
+          "listings": 10,
+          "avg_price": 88.2
+        },
+        {
+          "name": "Shore Acres",
+          "listings": 10,
+          "avg_price": 122.4
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 31
+        },
+        {
+          "range": "$51-100",
+          "count": 127
+        },
+        {
+          "range": "$101-150",
+          "count": 76
+        },
+        {
+          "range": "$151-200",
+          "count": 27
+        },
+        {
+          "range": "$201-300",
+          "count": 21
+        },
+        {
+          "range": "$301+",
+          "count": 9
+        }
+      ],
+      "avg_availability": 232,
+      "borough": "Staten Island"
+    }
+  }
+};
+
+    const COLORS = ['#6c63ff', '#48bb78', '#ed8936', '#f56565', '#4299e1', '#9f7aea'];
+    const SOFT_COLORS = [
+      'rgba(108, 99, 255, 0.88)',
+      'rgba(72, 187, 120, 0.88)',
+      'rgba(237, 137, 54, 0.88)',
+      'rgba(245, 101, 101, 0.88)',
+      'rgba(66, 153, 225, 0.88)',
+      'rgba(159, 122, 234, 0.88)'
+    ];
+
+    const filterEl = document.getElementById('boroughFilter');
+    const boroughPill = document.getElementById('boroughPill');
+    const chartStore = {};
+
+    const formatNumber = (value) => new Intl.NumberFormat('en-US').format(Math.round(value));
+    const formatCurrency = (value) => `$${Number(value).toFixed(1)}`;
+    const formatDecimal = (value) => Number(value).toFixed(1);
+
+    function getSelectedPayload(borough) {
+      if (!borough || borough === 'All Boroughs') {
+        return {
+          kpis: RAW_DATA.kpis,
+          byRoomType: RAW_DATA.by_room_type,
+          topNeighbourhoods: RAW_DATA.top_neighbourhoods,
+          priceDistribution: RAW_DATA.price_distribution,
+          scope: 'All Boroughs'
+        };
+      }
+      const scoped = RAW_DATA.borough_breakdowns[borough];
+      return {
+        kpis: scoped.kpis,
+        byRoomType: scoped.by_room_type,
+        topNeighbourhoods: scoped.top_neighbourhoods,
+        priceDistribution: scoped.price_distribution,
+        scope: borough
+      };
+    }
+
+    function animateValue(element, toValue, formatter) {
+      const fromValue = Number(element.dataset.value || 0);
+      const start = performance.now();
+      const duration = 850;
+
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = fromValue + (toValue - fromValue) * eased;
+        element.textContent = formatter(current);
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          element.dataset.value = String(toValue);
+          element.textContent = formatter(toValue);
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    function updateKpis(payload) {
+      const kpis = payload.kpis;
+      animateValue(document.querySelector('[data-kpi="total_listings"]'), kpis.total_listings, (value) => formatNumber(value));
+      animateValue(document.querySelector('[data-kpi="avg_price"]'), kpis.avg_price, (value) => `$${Number(value).toFixed(1)}`);
+      animateValue(document.querySelector('[data-kpi="total_hosts"]'), kpis.total_hosts, (value) => formatNumber(value));
+      animateValue(document.querySelector('[data-kpi="avg_reviews"]'), kpis.avg_reviews, (value) => formatDecimal(value));
+
+      const scopeLabel = payload.scope === 'All Boroughs' ? 'citywide' : payload.scope;
+      document.getElementById('context-listings').textContent = `Listings in ${scopeLabel} after trimming price outliers`;
+      document.getElementById('context-price').textContent = `Average nightly price in ${scopeLabel}`;
+      document.getElementById('context-hosts').textContent = `Distinct hosts in ${scopeLabel}`;
+      document.getElementById('context-reviews').textContent = `Average review count in ${scopeLabel}`;
+    }
+
+    function axisStyle() {
+      return {
+        ticks: { color: '#cbd5e0', font: { family: 'Inter', size: 11 } },
+        grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false },
+        border: { display: false }
+      };
+    }
+
+    function tooltipLabel(context, formatter = (value) => value) {
+      return `${context.dataset.label}: ${formatter(context.parsed.x ?? context.parsed.y ?? context.parsed)}`;
+    }
+
+    function createCharts() {
+      const boroughLabels = RAW_DATA.by_neighbourhood_group.map((item) => item.name);
+      const boroughListings = RAW_DATA.by_neighbourhood_group.map((item) => item.listings);
+      const boroughAvgPrices = RAW_DATA.by_neighbourhood_group.map((item) => item.avg_price);
+
+      chartStore.boroughChart = new Chart(document.getElementById('boroughChart'), {
+        type: 'bar',
+        data: {
+          labels: boroughLabels,
+          datasets: [{
+            label: 'Listings',
+            data: boroughListings,
+            borderRadius: 12,
+            borderSkipped: false,
+            backgroundColor: COLORS[0]
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: (context) => tooltipLabel(context, formatNumber) } }
+          },
+          scales: { x: axisStyle(), y: axisStyle() }
+        }
+      });
+
+      chartStore.roomTypeChart = new Chart(document.getElementById('roomTypeChart'), {
+        type: 'doughnut',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: SOFT_COLORS, borderColor: '#141823', borderWidth: 2, hoverOffset: 10 }] },
+        options: {
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#e2e8f0', usePointStyle: true, padding: 18 } },
+            tooltip: { callbacks: { label: (context) => `${context.label}: ${formatNumber(context.parsed)} listings` } }
+          }
+        }
+      });
+
+      chartStore.topNeighbourhoodChart = new Chart(document.getElementById('topNeighbourhoodChart'), {
+        type: 'bar',
+        data: { labels: [], datasets: [{ label: 'Listings', data: [], borderRadius: 10, borderSkipped: false, backgroundColor: COLORS[4] }] },
+        options: {
+          indexAxis: 'y',
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: {
+              label: (context) => tooltipLabel(context, formatNumber),
+              afterLabel: (context) => {
+                const item = context.raw.meta;
+                return item.avg_price ? `Avg price: $${Number(item.avg_price).toFixed(1)}` : '';
+              }
+            } }
+          },
+          scales: { x: axisStyle(), y: axisStyle() }
+        }
+      });
+
+      chartStore.priceDistributionChart = new Chart(document.getElementById('priceDistributionChart'), {
+        type: 'bar',
+        data: { labels: [], datasets: [{ label: 'Listings', data: [], borderRadius: 10, borderSkipped: false, backgroundColor: COLORS[2] }] },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: (context) => tooltipLabel(context, formatNumber) } }
+          },
+          scales: { x: axisStyle(), y: axisStyle() }
+        }
+      });
+
+      chartStore.availabilityChart = new Chart(document.getElementById('availabilityChart'), {
+        type: 'bar',
+        data: {
+          labels: RAW_DATA.availability_by_borough.map((item) => item.borough),
+          datasets: [{
+            label: 'Avg Availability',
+            data: RAW_DATA.availability_by_borough.map((item) => item.avg_availability),
+            borderRadius: 12,
+            borderSkipped: false,
+            backgroundColor: COLORS[1]
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${formatNumber(context.parsed.y)} days` } }
+          },
+          scales: { x: axisStyle(), y: axisStyle() }
+        }
+      });
+
+      chartStore.boroughPriceChart = new Chart(document.getElementById('boroughPriceChart'), {
+        type: 'line',
+        data: {
+          labels: boroughLabels,
+          datasets: [{
+            label: 'Avg Price',
+            data: boroughAvgPrices,
+            tension: 0.35,
+            fill: true,
+            borderColor: COLORS[5],
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: COLORS[5],
+            backgroundColor: 'rgba(159, 122, 234, 0.18)'
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: (context) => `${context.dataset.label}: $${Number(context.parsed.y).toFixed(1)}` } }
+          },
+          scales: { x: axisStyle(), y: axisStyle() }
+        }
+      });
+    }
+
+    function highlightBoroughCharts(selected) {
+      const active = selected && selected !== 'All Boroughs' ? selected : null;
+      chartStore.boroughChart.data.datasets[0].backgroundColor = RAW_DATA.by_neighbourhood_group.map((item) => item.name === active ? COLORS[0] : 'rgba(108, 99, 255, 0.28)');
+      chartStore.availabilityChart.data.datasets[0].backgroundColor = RAW_DATA.availability_by_borough.map((item) => item.borough === active ? COLORS[1] : 'rgba(72, 187, 120, 0.24)');
+      chartStore.boroughPriceChart.data.datasets[0].pointBackgroundColor = RAW_DATA.by_neighbourhood_group.map((item) => item.name === active ? COLORS[5] : '#ffffff');
+      chartStore.boroughPriceChart.data.datasets[0].pointBorderColor = RAW_DATA.by_neighbourhood_group.map((item) => item.name === active ? COLORS[5] : 'rgba(159,122,234,0.45)');
+      chartStore.boroughChart.update();
+      chartStore.availabilityChart.update();
+      chartStore.boroughPriceChart.update();
+    }
+
+    function updateDynamicCharts(payload) {
+      const roomLabels = payload.byRoomType.map((item) => item.type);
+      const roomCounts = payload.byRoomType.map((item) => item.count);
+      chartStore.roomTypeChart.data.labels = roomLabels;
+      chartStore.roomTypeChart.data.datasets[0].data = roomCounts;
+      chartStore.roomTypeChart.update();
+
+      const neighbourhoods = payload.topNeighbourhoods.map((item) => {
+        const label = payload.scope === 'All Boroughs' && item.borough ? `${item.name} · ${item.borough}` : item.name;
+        return { label, meta: item };
+      });
+      chartStore.topNeighbourhoodChart.data.labels = neighbourhoods.map((item) => item.label);
+      chartStore.topNeighbourhoodChart.data.datasets[0].data = neighbourhoods.map((item) => ({ x: item.meta.listings, y: item.label, meta: item.meta }));
+      chartStore.topNeighbourhoodChart.update();
+
+      chartStore.priceDistributionChart.data.labels = payload.priceDistribution.map((item) => item.range);
+      chartStore.priceDistributionChart.data.datasets[0].data = payload.priceDistribution.map((item) => item.count);
+      chartStore.priceDistributionChart.update();
+    }
+
+    function render() {
+      const selected = filterEl.value;
+      const payload = getSelectedPayload(selected);
+      boroughPill.textContent = payload.scope;
+      updateKpis(payload);
+      updateDynamicCharts(payload);
+      highlightBoroughCharts(selected);
+    }
+
+    function hydrateFilter() {
+      RAW_DATA.by_neighbourhood_group.forEach((item) => {
+        const option = document.createElement('option');
+        option.value = item.name;
+        option.textContent = item.name;
+        filterEl.appendChild(option);
+      });
+      filterEl.addEventListener('change', render);
+    }
+
+    hydrateFilter();
+    createCharts();
+    render();
+  </script>
+</body>
+</html>

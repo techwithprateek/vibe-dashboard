@@ -1,0 +1,715 @@
+{
+  "meta": {
+    "source": "Inside Airbnb",
+    "city": "New York City",
+    "snapshot": "2024",
+    "notes": "Prices above $1000 are excluded as outliers. All values are pre-aggregated."
+  },
+  "kpis": {
+    "total_listings": 20590,
+    "avg_price": 161.3,
+    "total_hosts": 12350,
+    "avg_reviews": 42.8
+  },
+  "by_neighbourhood_group": [
+    {
+      "name": "Manhattan",
+      "listings": 7900,
+      "avg_price": 195.2
+    },
+    {
+      "name": "Brooklyn",
+      "listings": 7697,
+      "avg_price": 154.2
+    },
+    {
+      "name": "Queens",
+      "listings": 3754,
+      "avg_price": 121.1
+    },
+    {
+      "name": "Bronx",
+      "listings": 948,
+      "avg_price": 108.0
+    },
+    {
+      "name": "Staten Island",
+      "listings": 291,
+      "avg_price": 118.8
+    }
+  ],
+  "by_room_type": [
+    {
+      "type": "Entire home/apt",
+      "count": 11423,
+      "avg_price": 203.9
+    },
+    {
+      "type": "Private room",
+      "count": 8770,
+      "avg_price": 106.1
+    },
+    {
+      "type": "Shared room",
+      "count": 288,
+      "avg_price": 100.5
+    },
+    {
+      "type": "Hotel room",
+      "count": 109,
+      "avg_price": 288.8
+    }
+  ],
+  "top_neighbourhoods": [
+    {
+      "name": "Bedford-Stuyvesant",
+      "borough": "Brooklyn",
+      "listings": 1582,
+      "avg_price": 138.8
+    },
+    {
+      "name": "Harlem",
+      "borough": "Manhattan",
+      "listings": 1057,
+      "avg_price": 142.5
+    },
+    {
+      "name": "Williamsburg",
+      "borough": "Brooklyn",
+      "listings": 968,
+      "avg_price": 184.2
+    },
+    {
+      "name": "Midtown",
+      "borough": "Manhattan",
+      "listings": 915,
+      "avg_price": 217.2
+    },
+    {
+      "name": "Hell's Kitchen",
+      "borough": "Manhattan",
+      "listings": 857,
+      "avg_price": 227.5
+    },
+    {
+      "name": "Upper East Side",
+      "borough": "Manhattan",
+      "listings": 780,
+      "avg_price": 173.0
+    },
+    {
+      "name": "Bushwick",
+      "borough": "Brooklyn",
+      "listings": 750,
+      "avg_price": 120.5
+    },
+    {
+      "name": "Crown Heights",
+      "borough": "Brooklyn",
+      "listings": 662,
+      "avg_price": 159.6
+    },
+    {
+      "name": "Upper West Side",
+      "borough": "Manhattan",
+      "listings": 611,
+      "avg_price": 200.3
+    },
+    {
+      "name": "East Village",
+      "borough": "Manhattan",
+      "listings": 404,
+      "avg_price": 208.2
+    }
+  ],
+  "price_distribution": [
+    {
+      "range": "$0-50",
+      "count": 2032
+    },
+    {
+      "range": "$51-100",
+      "count": 5967
+    },
+    {
+      "range": "$101-150",
+      "count": 4885
+    },
+    {
+      "range": "$151-200",
+      "count": 3109
+    },
+    {
+      "range": "$201-300",
+      "count": 2625
+    },
+    {
+      "range": "$301+",
+      "count": 1972
+    }
+  ],
+  "availability_by_borough": [
+    {
+      "borough": "Manhattan",
+      "avg_availability": 203
+    },
+    {
+      "borough": "Brooklyn",
+      "avg_availability": 200
+    },
+    {
+      "borough": "Queens",
+      "avg_availability": 212
+    },
+    {
+      "borough": "Bronx",
+      "avg_availability": 237
+    },
+    {
+      "borough": "Staten Island",
+      "avg_availability": 232
+    }
+  ],
+  "borough_breakdowns": {
+    "Manhattan": {
+      "kpis": {
+        "total_listings": 7900,
+        "avg_price": 195.2,
+        "total_hosts": 4067,
+        "avg_reviews": 37.3
+      },
+      "by_room_type": [
+        {
+          "type": "Entire home/apt",
+          "count": 5184,
+          "avg_price": 223.6
+        },
+        {
+          "type": "Private room",
+          "count": 2546,
+          "avg_price": 135.7
+        },
+        {
+          "type": "Hotel room",
+          "count": 98,
+          "avg_price": 302.7
+        },
+        {
+          "type": "Shared room",
+          "count": 72,
+          "avg_price": 107.6
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Harlem",
+          "listings": 1057,
+          "avg_price": 142.5
+        },
+        {
+          "name": "Midtown",
+          "listings": 915,
+          "avg_price": 217.2
+        },
+        {
+          "name": "Hell's Kitchen",
+          "listings": 857,
+          "avg_price": 227.5
+        },
+        {
+          "name": "Upper East Side",
+          "listings": 780,
+          "avg_price": 173.0
+        },
+        {
+          "name": "Upper West Side",
+          "listings": 611,
+          "avg_price": 200.3
+        },
+        {
+          "name": "East Village",
+          "listings": 404,
+          "avg_price": 208.2
+        },
+        {
+          "name": "East Harlem",
+          "listings": 374,
+          "avg_price": 141.3
+        },
+        {
+          "name": "Chelsea",
+          "listings": 359,
+          "avg_price": 245.4
+        },
+        {
+          "name": "Lower East Side",
+          "listings": 322,
+          "avg_price": 190.9
+        },
+        {
+          "name": "Washington Heights",
+          "listings": 300,
+          "avg_price": 116.1
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 363
+        },
+        {
+          "range": "$51-100",
+          "count": 1737
+        },
+        {
+          "range": "$101-150",
+          "count": 1997
+        },
+        {
+          "range": "$151-200",
+          "count": 1368
+        },
+        {
+          "range": "$201-300",
+          "count": 1269
+        },
+        {
+          "range": "$301+",
+          "count": 1166
+        }
+      ],
+      "avg_availability": 203,
+      "borough": "Manhattan"
+    },
+    "Brooklyn": {
+      "kpis": {
+        "total_listings": 7697,
+        "avg_price": 154.2,
+        "total_hosts": 5280,
+        "avg_reviews": 48.9
+      },
+      "by_room_type": [
+        {
+          "type": "Entire home/apt",
+          "count": 4114,
+          "avg_price": 200.8
+        },
+        {
+          "type": "Private room",
+          "count": 3457,
+          "avg_price": 100.4
+        },
+        {
+          "type": "Shared room",
+          "count": 122,
+          "avg_price": 106.0
+        },
+        {
+          "type": "Hotel room",
+          "count": 4,
+          "avg_price": 162.8
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Bedford-Stuyvesant",
+          "listings": 1582,
+          "avg_price": 138.8
+        },
+        {
+          "name": "Williamsburg",
+          "listings": 968,
+          "avg_price": 184.2
+        },
+        {
+          "name": "Bushwick",
+          "listings": 750,
+          "avg_price": 120.5
+        },
+        {
+          "name": "Crown Heights",
+          "listings": 662,
+          "avg_price": 159.6
+        },
+        {
+          "name": "East Flatbush",
+          "listings": 401,
+          "avg_price": 124.8
+        },
+        {
+          "name": "Greenpoint",
+          "listings": 297,
+          "avg_price": 195.3
+        },
+        {
+          "name": "Flatbush",
+          "listings": 269,
+          "avg_price": 155.5
+        },
+        {
+          "name": "East New York",
+          "listings": 246,
+          "avg_price": 129.8
+        },
+        {
+          "name": "Prospect-Lefferts Gardens",
+          "listings": 210,
+          "avg_price": 143.9
+        },
+        {
+          "name": "Canarsie",
+          "listings": 189,
+          "avg_price": 128.9
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 844
+        },
+        {
+          "range": "$51-100",
+          "count": 2225
+        },
+        {
+          "range": "$101-150",
+          "count": 1842
+        },
+        {
+          "range": "$151-200",
+          "count": 1186
+        },
+        {
+          "range": "$201-300",
+          "count": 987
+        },
+        {
+          "range": "$301+",
+          "count": 613
+        }
+      ],
+      "avg_availability": 200,
+      "borough": "Brooklyn"
+    },
+    "Queens": {
+      "kpis": {
+        "total_listings": 3754,
+        "avg_price": 121.1,
+        "total_hosts": 2310,
+        "avg_reviews": 43.7
+      },
+      "by_room_type": [
+        {
+          "type": "Private room",
+          "count": 2093,
+          "avg_price": 87.4
+        },
+        {
+          "type": "Entire home/apt",
+          "count": 1579,
+          "avg_price": 167.3
+        },
+        {
+          "type": "Shared room",
+          "count": 75,
+          "avg_price": 84.1
+        },
+        {
+          "type": "Hotel room",
+          "count": 7,
+          "avg_price": 165.7
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Astoria",
+          "listings": 361,
+          "avg_price": 112.4
+        },
+        {
+          "name": "Flushing",
+          "listings": 324,
+          "avg_price": 109.6
+        },
+        {
+          "name": "Long Island City",
+          "listings": 252,
+          "avg_price": 160.6
+        },
+        {
+          "name": "Jamaica",
+          "listings": 241,
+          "avg_price": 127.4
+        },
+        {
+          "name": "East Elmhurst",
+          "listings": 183,
+          "avg_price": 130.6
+        },
+        {
+          "name": "Woodside",
+          "listings": 170,
+          "avg_price": 79.1
+        },
+        {
+          "name": "Ridgewood",
+          "listings": 163,
+          "avg_price": 128.4
+        },
+        {
+          "name": "Elmhurst",
+          "listings": 145,
+          "avg_price": 79.1
+        },
+        {
+          "name": "Sunnyside",
+          "listings": 138,
+          "avg_price": 111.8
+        },
+        {
+          "name": "Jackson Heights",
+          "listings": 136,
+          "avg_price": 105.7
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 627
+        },
+        {
+          "range": "$51-100",
+          "count": 1449
+        },
+        {
+          "range": "$101-150",
+          "count": 784
+        },
+        {
+          "range": "$151-200",
+          "count": 432
+        },
+        {
+          "range": "$201-300",
+          "count": 305
+        },
+        {
+          "range": "$301+",
+          "count": 157
+        }
+      ],
+      "avg_availability": 212,
+      "borough": "Queens"
+    },
+    "Bronx": {
+      "kpis": {
+        "total_listings": 948,
+        "avg_price": 108.0,
+        "total_hosts": 632,
+        "avg_reviews": 35.4
+      },
+      "by_room_type": [
+        {
+          "type": "Private room",
+          "count": 543,
+          "avg_price": 79.1
+        },
+        {
+          "type": "Entire home/apt",
+          "count": 390,
+          "avg_price": 149.0
+        },
+        {
+          "type": "Shared room",
+          "count": 15,
+          "avg_price": 87.3
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Wakefield",
+          "listings": 66,
+          "avg_price": 99.2
+        },
+        {
+          "name": "Mott Haven",
+          "listings": 56,
+          "avg_price": 142.6
+        },
+        {
+          "name": "Kingsbridge",
+          "listings": 55,
+          "avg_price": 86.5
+        },
+        {
+          "name": "Williamsbridge",
+          "listings": 55,
+          "avg_price": 102.5
+        },
+        {
+          "name": "Fordham",
+          "listings": 39,
+          "avg_price": 93.7
+        },
+        {
+          "name": "Clason Point",
+          "listings": 36,
+          "avg_price": 108.4
+        },
+        {
+          "name": "Allerton",
+          "listings": 35,
+          "avg_price": 100.8
+        },
+        {
+          "name": "Concourse",
+          "listings": 32,
+          "avg_price": 93.7
+        },
+        {
+          "name": "Claremont Village",
+          "listings": 31,
+          "avg_price": 115.7
+        },
+        {
+          "name": "Longwood",
+          "listings": 30,
+          "avg_price": 105.2
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 167
+        },
+        {
+          "range": "$51-100",
+          "count": 429
+        },
+        {
+          "range": "$101-150",
+          "count": 186
+        },
+        {
+          "range": "$151-200",
+          "count": 96
+        },
+        {
+          "range": "$201-300",
+          "count": 43
+        },
+        {
+          "range": "$301+",
+          "count": 27
+        }
+      ],
+      "avg_availability": 237,
+      "borough": "Bronx"
+    },
+    "Staten Island": {
+      "kpis": {
+        "total_listings": 291,
+        "avg_price": 118.8,
+        "total_hosts": 209,
+        "avg_reviews": 46.4
+      },
+      "by_room_type": [
+        {
+          "type": "Entire home/apt",
+          "count": 156,
+          "avg_price": 139.9
+        },
+        {
+          "type": "Private room",
+          "count": 131,
+          "avg_price": 92.4
+        },
+        {
+          "type": "Shared room",
+          "count": 4,
+          "avg_price": 161.2
+        }
+      ],
+      "top_neighbourhoods": [
+        {
+          "name": "Tompkinsville",
+          "listings": 35,
+          "avg_price": 135.8
+        },
+        {
+          "name": "St. George",
+          "listings": 31,
+          "avg_price": 120.8
+        },
+        {
+          "name": "Mariners Harbor",
+          "listings": 20,
+          "avg_price": 92.3
+        },
+        {
+          "name": "West Brighton",
+          "listings": 20,
+          "avg_price": 72.5
+        },
+        {
+          "name": "Grant City",
+          "listings": 13,
+          "avg_price": 64.5
+        },
+        {
+          "name": "Stapleton",
+          "listings": 12,
+          "avg_price": 142.7
+        },
+        {
+          "name": "Arrochar",
+          "listings": 11,
+          "avg_price": 124.8
+        },
+        {
+          "name": "Clifton",
+          "listings": 10,
+          "avg_price": 153.7
+        },
+        {
+          "name": "Randall Manor",
+          "listings": 10,
+          "avg_price": 88.2
+        },
+        {
+          "name": "Shore Acres",
+          "listings": 10,
+          "avg_price": 122.4
+        }
+      ],
+      "price_distribution": [
+        {
+          "range": "$0-50",
+          "count": 31
+        },
+        {
+          "range": "$51-100",
+          "count": 127
+        },
+        {
+          "range": "$101-150",
+          "count": 76
+        },
+        {
+          "range": "$151-200",
+          "count": 27
+        },
+        {
+          "range": "$201-300",
+          "count": 21
+        },
+        {
+          "range": "$301+",
+          "count": 9
+        }
+      ],
+      "avg_availability": 232,
+      "borough": "Staten Island"
+    }
+  }
+}
