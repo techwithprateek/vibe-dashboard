@@ -1,134 +1,235 @@
 # 🏠 Vibe Dashboard
 
-> From boring PowerBI exports to stunning interactive HTML dashboards — built with Claude Code.
+> From boring CSV exports to stunning interactive HTML dashboards — pick your level and build it your way.
 
-## 🎬 The Workflow
-Turn a plain CSV export into a polished, shareable dashboard in one fast loop:
+---
 
-1. Export or download a dataset.
-2. Feed Claude Code a prompt describing the KPIs, charts, theme, and filters you want.
-3. Let Claude Code transform the data into pre-aggregated JSON.
-4. Generate a single `index.html` file with embedded data and interactive charts.
-5. Open the file directly in your browser — no server, framework, or build step required.
+## 🟢 Level 1 — Beginner: Let Claude / ChatGPT Do Everything
 
-## 🛠 Stack
-- **Chart.js** for interactive visualizations
-- **HTML / CSS / JavaScript** in a single file
-- **Python** for CSV processing and JSON aggregation
-- **No framework needed**
+No code required. Just a CSV and the right prompt.
 
-## ✨ Key Features
-- 4 KPI cards with animated count-up
-- Borough filter that updates all charts
-- 6 interactive charts with hover tooltips
-- Dark theme, fully responsive
-- Single file — no server needed
+### How it works
+1. Export or download your dataset as a **CSV file**.
+2. Open [Claude](https://claude.ai) or [ChatGPT](https://chatgpt.com).
+3. Upload the CSV and paste one of the prompts below.
+4. The AI will analyse the data and generate a complete, self-contained `index.html` dashboard.
+5. Save the response as `index.html` and open it in your browser — done.
 
-## 🤖 Claude Code Prompt
-Use this prompt pattern to generate similar dashboards for any dataset:
+### 🛠 Tools Needed
+| Tool | Purpose |
+|------|---------|
+| [Claude](https://claude.ai) or [ChatGPT](https://chatgpt.com) | Generate the dashboard |
+| Any modern browser | Open the HTML file |
+| Your CSV file | The data source |
+
+### 🤖 Prompt — Quick Dashboard
+Use this when you want a fast, good-looking dashboard from any CSV:
 
 ```text
-Create a single-file HTML dashboard for [topic] with:
-- KPI cards at the top showing [metric1], [metric2], [metric3]
-- A bar chart showing [x] vs [y]
-- A line chart showing [trend over time]
-- A dropdown filter for [dimension]
-- Dark theme, modern design, using Chart.js
-- Sample data hardcoded as a JS array
+I've attached a CSV file. Please:
+1. Analyse the data and identify the most important KPIs and trends.
+2. Generate a single self-contained index.html dashboard with:
+   - 3–4 KPI cards at the top (pick the most meaningful metrics)
+   - A bar chart and a line chart showing key trends
+   - A dropdown filter for the most useful categorical column
+   - Dark theme, modern card layout, using Chart.js from CDN
+   - All data hardcoded as a JS array inside the HTML file
+3. Do not use any external files — everything must be in one HTML file.
 ```
 
-## 📊 How to Connect to Real Data
+### 🤖 Prompt — Detailed Report
+Use this when you want written analysis alongside the visuals:
 
-### Option 1 — Hardcoded JSON (this project)
-This repo uses the simplest possible setup: generate JSON once, then paste or embed it directly inside the HTML file as a JavaScript constant.
-
-```html
-<script>
-  const RAW_DATA = { /* pre-aggregated JSON goes here */ };
-</script>
+```text
+I've attached a CSV file. Please:
+1. Write a short executive summary (3–5 bullet points) of the key findings.
+2. Identify the top 3 insights or anomalies in the data.
+3. Generate a single self-contained index.html file that includes:
+   - The executive summary rendered as styled HTML at the top
+   - KPI cards for [metric1], [metric2], [metric3]
+   - Charts that support each of the 3 insights
+   - Dark theme, using Chart.js from CDN, all data embedded inline
 ```
 
-### Option 2 — Fetch from hosted file
-Host a JSON file anywhere static files are supported and fetch it at runtime.
+> 💡 **Tip:** The more context you give (e.g. "this is Airbnb listing data for NYC, the key metric is revenue per listing"), the better the output.
 
-```html
-<script>
-  async function loadData() {
-    const response = await fetch('./data/airbnb_data.json');
-    return response.json();
-  }
-</script>
+---
+
+## 🟡 Level 2 — Intermediate: Python + Pandas Processing
+
+Use Python to clean and aggregate the data yourself, then feed the result to an AI or write the HTML manually.
+
+### How it works
+1. Load your CSV with **pandas** and compute the metrics you care about.
+2. Export the aggregated data as **JSON**.
+3. Embed the JSON in an HTML template (manually or with Jinja2), or pass it to Claude Code with a targeted prompt.
+4. Open `index.html` in your browser.
+
+### 🛠 Tools Needed
+| Tool | Purpose |
+|------|---------|
+| Python 3.8+ | Runtime |
+| pandas | Data cleaning & aggregation |
+| Jinja2 *(optional)* | HTML templating |
+| [Claude Code](https://claude.ai/code) or VS Code + Copilot | Generate / refine the HTML |
+| Chart.js (CDN) | Interactive charts |
+
+### 📦 Install dependencies
+```bash
+pip install pandas jinja2
 ```
 
-### Option 3 — Google Sheets live backend
-Publish a Google Sheet as CSV, then parse it client-side with Papa Parse.
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script>
-  Papa.parse('https://docs.google.com/spreadsheets/d/e/your-sheet-id/pub?output=csv', {
-    download: true,
-    header: true,
-    complete: ({ data }) => {
-      console.log('Rows from Google Sheets:', data);
-    }
-  });
-</script>
-```
-
-### Option 4 — REST API
-Serve live aggregates from an API such as FastAPI and load them from the dashboard.
-
+### Example: process and embed data
 ```python
-# app.py
-from fastapi import FastAPI
-
-app = FastAPI()
-
-@app.get('/dashboard-data')
-def dashboard_data():
-    return {"kpis": {"total_listings": 20590}}
-```
-
-```html
-<script>
-  async function loadData() {
-    const response = await fetch('http://127.0.0.1:8000/dashboard-data');
-    return response.json();
-  }
-</script>
-```
-
-### Option 5 — Python-generated HTML
-For a repeatable reporting pipeline, use Python to read data, aggregate with pandas, inject JSON into a Jinja2 template, and output a ready-to-open HTML file.
-
-```python
+# process_data.py
 import json
 import pandas as pd
 from jinja2 import Template
 
-frame = pd.read_csv('data.csv')
+df = pd.read_csv('data/listings.csv')
+
 summary = {
-    'rows': len(frame),
-    'avg_price': round(frame['price'].mean(), 1)
+    'total_listings': len(df),
+    'avg_price': round(df['price'].mean(), 1),
+    'avg_rating': round(df['rating'].mean(), 2),
+    'by_borough': df.groupby('borough')['price'].mean().round(1).to_dict(),
+    'monthly_trend': df.groupby('month')['revenue'].sum().to_dict(),
 }
-html = Template("<script>const RAW_DATA = {{ data | safe }};</script>").render(
-    data=json.dumps(summary)
-)
+
+# Inject into HTML template
+template_str = open('template.html').read()
+html = Template(template_str).render(data=json.dumps(summary))
+open('index.html', 'w').write(html)
+print("Dashboard generated → index.html")
 ```
 
-## 🚀 Getting Started
-1. Clone this repo
-2. Open `index.html` in your browser
-3. That's it — no npm install, no server
+```html
+<!-- template.html -->
+<script>
+  const RAW_DATA = {{ data | safe }};
+</script>
+```
+
+### 🤖 Prompt for Claude Code (after processing)
+```text
+Here is my pre-aggregated JSON data: [paste JSON]
+
+Generate a single-file index.html dashboard with:
+- KPI cards for total_listings, avg_price, avg_rating
+- A bar chart of price by borough (from by_borough)
+- A line chart of monthly revenue trend (from monthly_trend)
+- A dropdown filter to switch between metrics
+- Dark theme, Chart.js from CDN, all data inline
+```
+
+---
+
+## 🔴 Level 3 — Advanced: Live Data Connections
+
+Move beyond static files — connect your dashboard to data that updates automatically.
+
+### 🛠 Tools Needed
+| Tool | Purpose |
+|------|---------|
+| Python + FastAPI | Serve live aggregates via REST API |
+| pandas / SQLAlchemy | Query and transform data |
+| Google Sheets + Papa Parse | Lightweight live spreadsheet backend |
+| JavaScript `fetch` API | Pull data at runtime |
+| Any static host (GitHub Pages, Netlify) | Deploy the dashboard |
+
+---
+
+### Option A — Fetch from a hosted JSON file
+Best for data that refreshes on a schedule (e.g. a nightly cron job).
+
+```html
+<script>
+  async function loadData() {
+    const res = await fetch('./data/dashboard.json');
+    return res.json();
+  }
+</script>
+```
+
+---
+
+### Option B — Google Sheets as a live backend
+Publish your Google Sheet as CSV and parse it in-browser with **Papa Parse** — no backend needed.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/YOUR_SHEET_ID/pub?output=csv';
+
+  Papa.parse(SHEET_URL, {
+    download: true,
+    header: true,
+    complete: ({ data }) => renderDashboard(data),
+  });
+</script>
+```
+
+> 💡 In Google Sheets: **File → Share → Publish to web → CSV**, then copy the link.
+
+---
+
+### Option C — FastAPI REST backend
+Best when data lives in a database or needs server-side computation.
+
+```python
+# app.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+
+app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"])
+
+@app.get('/dashboard-data')
+def dashboard_data():
+    df = pd.read_csv('data/listings.csv')   # swap for a DB query
+    return {
+        'total_listings': len(df),
+        'avg_price': round(df['price'].mean(), 1),
+        'by_borough': df.groupby('borough')['price'].mean().round(1).to_dict(),
+    }
+```
+
+```bash
+pip install fastapi uvicorn pandas
+uvicorn app:app --reload
+```
+
+```html
+<script>
+  async function loadData() {
+    const res = await fetch('http://127.0.0.1:8000/dashboard-data');
+    return res.json();
+  }
+</script>
+```
+
+---
+
+## 🚀 Quick Start (this repo)
+
+```bash
+git clone <repo-url>
+cd vibe-dashboard
+open index.html          # macOS
+# or: start index.html   # Windows
+# or: xdg-open index.html # Linux
+```
+
+No npm install, no server, no build step.
 
 ## 📁 Project Structure
 ```text
 .
 ├── data/
-│   ├── airbnb_data.json
-│   └── airbnb_listings.csv
-├── index.html
-├── process_data.py
+│   ├── airbnb_listings.csv   # raw data
+│   └── airbnb_data.json      # pre-aggregated output
+├── index.html                # dashboard (open in browser)
+├── process_data.py           # Level 2 processing script
 └── README.md
 ```
